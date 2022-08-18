@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
  * @author White
  */
 @Configuration
-@ConditionalOnProperty(value = "mybatis-crypto.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(value = "mybatis-crypto.enabled", havingValue = "true", matchIfMissing = false)
 @EnableConfigurationProperties(MybatisCryptoProperties.class)
 public class MyBatisCryptoAutoConfiguration {
 
