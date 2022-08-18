@@ -60,10 +60,10 @@ public class MybatisEncryptionPlugin implements Interceptor {
                     MapperMethod.ParamMap<Object> paramMap = (MapperMethod.ParamMap<Object>) copiedParameter;
                     encryptParamMap(paramMap);
                 } else {
-                    if(args.length == 6){
-                        if(parameter instanceof HashMap){
-                            BoundSql boundSql = (BoundSql)args[5];
-                            Object additionalParameter = boundSql.getAdditionalParameter("_parameter");
+                    if(args.length == 6 && parameter instanceof HashMap){
+                        BoundSql boundSql = (BoundSql)args[5];
+                        Object additionalParameter = boundSql.getAdditionalParameter("_parameter");
+                        if(additionalParameter != null){
                             Object copiedAdditionalParameter = kryo.copy(additionalParameter);
                             encryptEntity(copiedAdditionalParameter);
                             Map<String, Object> copiedParameter1 = JSON.parseObject(JSON.toJSONString(copiedAdditionalParameter), new TypeReference<Map<String, Object>>() {});
@@ -96,6 +96,9 @@ public class MybatisEncryptionPlugin implements Interceptor {
     }
 
     private void encryptEntity(Object parameter) throws MybatisCryptoException {
+        if(parameter == null){
+            return;
+        }
         processFields(EncryptedFieldsProvider.get(parameter.getClass()), parameter);
     }
 
