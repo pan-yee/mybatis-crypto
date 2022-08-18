@@ -1,5 +1,7 @@
 package io.github.whitedg.mybatis.crypto;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.esotericsoftware.kryo.kryo5.Kryo;
 import org.apache.ibatis.binding.MapperMethod;
 import org.apache.ibatis.cache.CacheKey;
@@ -58,6 +60,16 @@ public class MybatisEncryptionPlugin implements Interceptor {
                     MapperMethod.ParamMap<Object> paramMap = (MapperMethod.ParamMap<Object>) copiedParameter;
                     encryptParamMap(paramMap);
                 } else {
+                    if(args.length == 6){
+                        if(parameter instanceof HashMap){
+                            BoundSql boundSql = (BoundSql)args[5];
+                            Object additionalParameter = boundSql.getAdditionalParameter("_parameter");
+                            Object copiedAdditionalParameter = kryo.copy(additionalParameter);
+                            encryptEntity(copiedAdditionalParameter);
+                            Map<String, Object> copiedParameter1 = JSON.parseObject(JSON.toJSONString(copiedAdditionalParameter), new TypeReference<Map<String, Object>>() {});
+                            ((Map<String, Object>) copiedParameter).putAll(copiedParameter1);
+                        }
+                    }
                     encryptEntity(copiedParameter);
                 }
                 args[1] = copiedParameter;
